@@ -14,6 +14,17 @@ COMMON_SKILLS = [
 def clean_text(text):
     return re.sub(r"\s+", " ", text.lower()).strip()
 
+def extract_name(resume_text):
+    lines = resume_text.strip().split("\n")
+
+    for line in lines:
+        cleaned = line.strip()
+
+        if len(cleaned.split()) >= 2 and len(cleaned) < 60:
+            return cleaned
+
+    return "Applicant"
+
 def extract_skills(text):
     text = clean_text(text)
     found = []
