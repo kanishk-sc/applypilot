@@ -1,4 +1,6 @@
 import re
+from io import BytesIO
+from pypdf import PdfReader
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
@@ -13,6 +15,25 @@ COMMON_SKILLS = [
 
 def clean_text(text):
     return re.sub(r"\s+", " ", text.lower()).strip()
+
+def extract_text_from_file(uploaded_file):
+    file_name = uploaded_file.name.lower()
+
+    if file_name.endswith(".txt"):
+        return uploaded_file.read().decode("utf-8")
+
+    if file_name.endswith(".pdf"):
+        pdf_reader = PdfReader(BytesIO(uploaded_file.read()))
+        text = ""
+
+        for page in pdf_reader.pages:
+            page_text = page.extract_text()
+            if page_text:
+                text += page_text + "\n"
+
+        return text
+
+    return ""
 
 def extract_name(resume_text):
     lines = resume_text.strip().split("\n")

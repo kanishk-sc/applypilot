@@ -1,5 +1,10 @@
 import streamlit as st
-from utils import calculate_match_score, find_missing_skills, extract_name
+from utils import (
+    calculate_match_score,
+    find_missing_skills,
+    extract_name,
+    extract_text_from_file
+)
 
 st.set_page_config(page_title="ApplyPilot", layout="wide")
 
@@ -8,17 +13,22 @@ st.subheader("AI Job Application Workflow Assistant")
 
 st.write("Upload your resume, paste a job description, and get a match score, missing skills, and a cover letter draft.")
 
-uploaded_resume = st.file_uploader("Upload Resume (.txt only for now)", type=["txt"])
+uploaded_resume = st.file_uploader("Upload Resume (.pdf or .txt)", type=["pdf", "txt"])
 
 job_text = st.text_area("Paste Job Description", height=300)
 
 if st.button("Analyze Job"):
     if uploaded_resume is None:
-        st.warning("Please upload your resume as a .txt file.")
+        st.warning("Please upload your resume as a PDF or TXT file.")
     elif not job_text.strip():
         st.warning("Please paste a job description first.")
     else:
-        resume_text = uploaded_resume.read().decode("utf-8")
+        resume_text = extract_text_from_file(uploaded_resume)
+
+        if not resume_text.strip():
+            st.error("Could not extract text from this resume. Try uploading a text-based PDF or a .txt file.")
+            st.stop()
+
         candidate_name = extract_name(resume_text)
 
         score = calculate_match_score(resume_text, job_text)
