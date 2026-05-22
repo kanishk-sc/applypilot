@@ -1,0 +1,53 @@
+Kanishk Singh Chauhan
+# kanishksingh@usf.edu ï linkedin.com/in/kanishksinghchauhan § github.com/kanishk-sc
+ 813-709-9329  kanishksc.netlify.app
+Summary
+Information Technology student at USF with hands-on experience building ETL data pipelines, business intelligence
+dashboards, and AI-powered applications using Python, SQL, Power BI, and Snowflake. Seeking a data or IT analyst role
+where I can deliver cross-functional stakeholder reporting and turn complex datasets into actionable business insights.
+Education
+University of South Florida Aug 2022 – Aug 2026
+Bachelor of Science in Information Technology Tampa, FL
+Technical Skills
+Languages: Python, SQL, JavaScript, C, HTML/CSS
+Data & Analytics: Power BI, Tableau, Alteryx, Snowflake, Excel, DAX, Data Cleaning, Business Intelligence,
+Dashboarding
+Tools & Platforms: Git, GitHub, Linux, AWS, VS Code, Eclipse
+Concepts: REST APIs, ETL, Data Pipelines, Data Visualization, Predictive Modeling, Cloud Computing, Cybersecurity
+Fundamentals, Agile
+Projects
+MedFlow: Agentic AI Medical Scribe | Whisper, LangChain, Google Calendar API Oct 2025
+– Architected an AI-powered medical scribe platform with secure authentication and one-click recording, streamlining
+doctor-facing clinical workflows end-to-end.
+– Integrated Whisper Flow API for real-time transcription and engineered LangChain pipelines to automatically extract
+symptoms, vitals, and recommended tests into structured patient records.
+– Enabled hands-free appointment scheduling and voice-based patient retrieval via Google Calendar API, reducing manual
+data entry for clinical staff.
+Enterprise Sales Analytics Dashboard | Python, SQL, Power BI Jan 2024
+– Designed and automated an ETL pipeline processing 2,000+ sales and customer records from Excel, SQL databases, and
+cloud platforms, improving data processing efficiency by 20%.
+– Delivered interactive Power BI dashboards using DAX to surface sales trends, customer demographics, product
+performance, retention metrics, and revenue forecasts, enabling data-driven decisions for stakeholders.
+Customer Intelligence & Churn Prediction System | Alteryx, Python, Snowflake May 2024
+– Cleaned, transformed, and analyzed 1,500 customer records using Alteryx and Snowflake, building a segmentation and
+predictive modeling pipeline to support targeted business strategies.
+– Trained K-Means clustering and Logistic Regression models achieving 75% segmentation accuracy and 65% churn
+prediction accuracy, providing actionable retention insights.
+Experience
+Digital Engagement Center Aug 2023 – Present
+Student Engagement Leader Tampa, FL
+– Directed and mentored 70+ Student Engagement Specialists through real-time coaching, shift management, and
+operational reporting, improving team performance and campaign consistency.
+– Streamlined campaign execution and workforce coordination using VanillaSoft and Sling, maintaining reporting accuracy
+and tracking engagement KPIs across all active campaigns.
+– Partnered with leadership to optimize cross-functional outreach strategies, contributing to $100,000+ raised and
+engagement with 20,000+ alumni and donors.
+Leadership
+TEDxUSF Aug 2024 – May 2025
+Head of Outreach University of South Florida
+– Spearheaded outreach campaigns and strategic partnerships, expanding event visibility and driving community
+engagement across the USF campus.
+South Asian Students Association Jan 2024 – May 2024
+Treasurer University of South Florida
+– Oversaw budgeting, fundraising, and financial planning for all student organization events, ensuring responsible allocation
+of funds across multiple initiatives.
