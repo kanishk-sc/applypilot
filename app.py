@@ -22,6 +22,21 @@ from utils import (
 st.set_page_config(page_title="ApplyPilot", layout="wide")
 init_db()
 
+if "cover_letter" not in st.session_state:
+    st.session_state.cover_letter = ""
+
+if "recruiter_message" not in st.session_state:
+    st.session_state.recruiter_message = ""
+
+if "questions" not in st.session_state:
+    st.session_state.questions = []
+
+if "analysis_done" not in st.session_state:
+    st.session_state.analysis_done = False
+
+if "analysis_data" not in st.session_state:
+    st.session_state.analysis_data = {}
+
 st.sidebar.title("ApplyPilot")
 page = st.sidebar.radio(
     "Navigate",
@@ -65,65 +80,92 @@ if page == "Analyze Job":
             soft_skills_found = extract_skills(job_text, SOFT_SKILLS)
             fit_rating = get_fit_rating(score, len(missing))
 
-            st.metric("Resume Match Score", f"{score}%")
-            st.success(f"Job Fit Rating: {fit_rating}")
-
-            col1, col2, col3, col4 = st.columns(4)
-
-            with col1:
-                st.subheader("Resume Skills Found")
-                st.write(resume_skills)
-
-            with col2:
-                st.subheader("Job Skills Found")
-                st.write(job_skills)
-
-            with col3:
-                st.subheader("Missing Skills")
-                st.write(missing)
-
-            with col4:
-                st.subheader("Soft Skills Found")
-                st.write(soft_skills_found)
-
-            st.subheader("Resume Bullet Suggestions")
-            for bullet in generate_resume_bullets(missing):
-                st.write(f"- {bullet}")
-
-            cover_letter = generate_cover_letter(
+            st.session_state.cover_letter = generate_cover_letter(
                 candidate_name, company, role, resume_skills, job_skills, tone
             )
 
-            st.subheader("Cover Letter Draft")
-            st.text_area("Generated Cover Letter", cover_letter, height=260)
-
-            st.download_button(
-                "Download Cover Letter",
-                cover_letter,
-                file_name="cover_letter.txt",
-                mime="text/plain"
+            st.session_state.recruiter_message = generate_recruiter_message(
+                candidate_name, company, role
             )
 
-            recruiter_message = generate_recruiter_message(candidate_name, company, role)
+            st.session_state.questions = generate_interview_questions(job_skills)
 
-            st.subheader("Recruiter Message")
-            st.text_area("Generated Recruiter Message", recruiter_message, height=160)
+            st.session_state.analysis_data = {
+                "company": company,
+                "role": role,
+                "score": score,
+                "resume_skills": resume_skills,
+                "job_skills": job_skills,
+                "missing": missing,
+                "soft_skills_found": soft_skills_found,
+                "fit_rating": fit_rating,
+                "status": status,
+                "notes": notes,
+            }
 
-            st.download_button(
-                "Download Recruiter Message",
-                recruiter_message,
-                file_name="recruiter_message.txt",
-                mime="text/plain"
+            st.session_state.analysis_done = True
+
+    if st.session_state.analysis_done:
+        data = st.session_state.analysis_data
+
+        st.metric("Resume Match Score", f"{data['score']}%")
+        st.success(f"Job Fit Rating: {data['fit_rating']}")
+
+        col1, col2, col3, col4 = st.columns(4)
+
+        with col1:
+            st.subheader("Resume Skills Found")
+            st.write(data["resume_skills"])
+
+        with col2:
+            st.subheader("Job Skills Found")
+            st.write(data["job_skills"])
+
+        with col3:
+            st.subheader("Missing Skills")
+            st.write(data["missing"])
+
+        with col4:
+            st.subheader("Soft Skills Found")
+            st.write(data["soft_skills_found"])
+
+        st.subheader("Resume Bullet Suggestions")
+        for bullet in generate_resume_bullets(data["missing"]):
+            st.write(f"- {bullet}")
+
+        st.subheader("Cover Letter Draft")
+        st.text_area(
+            "Generated Cover Letter",
+            st.session_state.cover_letter,
+            height=260
+        )
+
+        st.download_button(
+            "Download Cover Letter",
+            st.session_state.cover_letter,
+            file_name="cover_letter.txt",
+            mime="text/plain"
+        )
+
+        st.subheader("Recruiter Message")
+        st.code(st.session_state.recruiter_message, language=None)
+        st.caption("Click the copy icon in the top-right corner to copy.")
+
+        st.subheader("Interview Prep Questions")
+        for q in st.session_state.questions:
+            st.write(f"- {q}")
+
+        if st.button("Save Application"):
+            save_application(
+                data["company"],
+                data["role"],
+                data["score"],
+                data["fit_rating"],
+                data["missing"],
+                data["status"],
+                data["notes"]
             )
-
-            st.subheader("Interview Prep Questions")
-            questions = generate_interview_questions(job_skills)
-            for q in questions:
-                st.write(f"- {q}")
-
-            if st.button("Save Application"):
-                save_application(company, role, score, fit_rating, missing, status, notes)
-                st.success("Application saved.")
+            st.success("Application saved.")
 
 elif page == "Compare Resumes":
     st.title("Resume Version Comparison")
