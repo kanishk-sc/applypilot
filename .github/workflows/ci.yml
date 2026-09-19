@@ -1,0 +1,34 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Start pgvector
+        run: docker compose up -d postgres --wait
+      - name: Build test image
+        run: docker compose --profile test build tests
+      - name: Verify migrations
+        run: |
+          docker compose --profile test run --rm tests alembic upgrade head
+          docker compose --profile test run --rm tests alembic check
+      - name: Lint and compile
+        run: |
+          docker compose --profile test run --rm tests python -m ruff format --check .
+          docker compose --profile test run --rm tests python -m ruff check .
+          docker compose --profile test run --rm tests python -m compileall -q backend app.py
+      - name: Test without paid APIs
+        run: docker compose --profile test run --rm tests
+      - name: Stop services
+        if: always()
+        run: docker compose --profile test down
