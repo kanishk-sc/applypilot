@@ -1,10 +1,12 @@
 FROM python:3.11-slim AS base
 
 WORKDIR /app
-COPY requirements.txt requirements-dev.txt pyproject.toml ./
+COPY requirements.txt requirements-dev.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 RUN groupadd --gid 10001 applypilot && useradd --uid 10001 --gid applypilot --no-create-home applypilot
+COPY pyproject.toml ./
 COPY --chown=applypilot:applypilot . .
+RUN chown applypilot:applypilot /app
 
 FROM base AS runtime
 USER applypilot
