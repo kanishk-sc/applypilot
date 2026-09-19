@@ -1,0 +1,67 @@
+name: applypilot
+
+services:
+  postgres:
+    image: pgvector/pgvector:0.8.2-pg16-bookworm
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-applypilot}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-applypilot-local-only}
+      POSTGRES_DB: ${POSTGRES_DB:-applypilot}
+    ports: ["127.0.0.1:5434:5432"]
+    volumes: ["postgres-data:/var/lib/postgresql/data"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+
+  api:
+    image: applypilot-app
+    build:
+      context: .
+      target: runtime
+    command: sh -c "alembic upgrade head && exec uvicorn backend.main:app --host 0.0.0.0 --port 8010"
+    environment:
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-applypilot}:${POSTGRES_PASSWORD:-applypilot-local-only}@postgres:5432/${POSTGRES_DB:-applypilot}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      EMBEDDING_MODEL: ${EMBEDDING_MODEL:-text-embedding-3-small}
+      EMBEDDING_DIMENSIONS: "1536"
+      GENERATION_MODEL: ${GENERATION_MODEL:-gpt-5-mini}
+      CORS_ORIGINS: http://localhost:8501
+    ports: ["127.0.0.1:8010:8010"]
+    depends_on:
+      postgres: {condition: service_healthy}
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8010/health', timeout=3)"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  ui:
+    image: applypilot-app
+    build:
+      context: .
+      target: runtime
+    command: streamlit run app.py --server.address=0.0.0.0 --server.port=8501
+    environment:
+      APPLYPILOT_API_URL: http://api:8010
+    ports: ["127.0.0.1:8501:8501"]
+    depends_on:
+      api: {condition: service_healthy}
+    restart: unless-stopped
+
+  tests:
+    build:
+      context: .
+      target: test
+    profiles: ["test"]
+    environment:
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-applypilot}:${POSTGRES_PASSWORD:-applypilot-local-only}@postgres:5432/${POSTGRES_DB:-applypilot}
+      EMBEDDING_DIMENSIONS: "1536"
+    depends_on:
+      postgres: {condition: service_healthy}
+
+volumes:
+  postgres-data:
